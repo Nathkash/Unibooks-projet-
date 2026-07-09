@@ -1,0 +1,142 @@
+{% extends 'unibooks/base.html' %}
+
+{% block titre %}{{ livre.titre }}{% endblock %}
+
+{% block contenu %}
+
+<div style="display: flex; align-items: flex-start; gap: 24px; margin-bottom: 28px;">
+    <a href="{% url 'unibooks:catalogue' %}" class="btn btn--secondaire btn--petit">← Catalogue</a>
+</div>
+
+<div class="bloc" style="display: flex; gap: 28px; align-items: flex-start;">
+    <div style="width: 90px; height: 120px; background: var(--bleu-tres-clair); border-radius: 6px; display: flex; align-items: center;justify-content: center; flex-shrink: 0; font-size: 3rem;">
+        No image
+    </div>
+
+    <div style="flex: 1;">
+        <h1 style="font-size: 1.4rem; font-weight: 700; color: var(--noir-titre); margin-bottom: 6px;">
+            {{ livre.titre }}
+        </h1>
+        <p style="color: var(--gris-moyen); font-size: 0.9rem; margin-bottom: 12px;">
+            {{ livre.auteur }}
+            {% if livre.categorie %} · {{ livre.categorie }}{% endif %}
+            {% if livre.isbn %} · ISBN : {{ livre.isbn }}{% endif %}
+        </p>
+
+        {% if livre.description %}
+        <p style="font-size: 0.9rem; color: var(--gris-fonce); line-height: 1.6; margin-bottom: 14px;">
+            {{ livre.description }}
+        </p>
+        {% endif %}
+
+        <div style="display: flex; align-items: center; gap: 12px;">
+            {% if livre.est_disponible %}
+            <span class="badge badge--rendu">Disponible</span>
+            <span style="font-size: 0.85rem; color: var(--gris-moyen);">
+                {{ livre.quantite_disponible }} exemplaire(s) sur {{ livre.quantite_totale }}
+            </span>
+            {% else %}
+            <span class="badge badge--en-retard">Indisponible</span>
+            <span style="font-size: 0.85rem; color: var(--gris-moyen);">
+                0 exemplaire disponible
+            </span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+<div class="bloc">
+    <div class="bloc__titre">Commentaires ({{ livre.commentaires.count }})</div>
+
+    <form method="POST" action="{% url 'unibooks:ajouter_commentaire' livre.pk %}">
+        {% csrf_token %}
+        <input type="hidden" name="parent_id" value="">
+        <div class="champ" style="margin-bottom: 12px;">
+            {{ form_commentaire.contenu }}
+        </div>
+        <button type="submit" class="btn btn--primaire btn--petit">Publier un commentaire</button>
+    </form>
+
+    <hr class="separateur">
+
+    {% if commentaires %}
+    <div class="commentaires-liste">
+
+        {% for commentaire in commentaires %}
+        <div class="commentaire">
+
+            <div class="commentaire__auteur">
+                {{ commentaire.auteur.get_full_name|default:commentaire.auteur.username }}
+            </div>
+            <div class="commentaire__date">
+                {{ commentaire.date_creation|date:"d/m/Y à H:i" }}
+            </div>
+
+            <div class="commentaire__contenu">{{ commentaire.contenu }}</div>
+
+            <div class="commentaire__actions">
+
+                <form method="POST" action="{% url 'unibooks:toggler_like' commentaire.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-like {% if commentaire.pk in likes_utilisateur %}btn-like--active{% endif %}">
+                        ♥ {{ commentaire.likes.count }}
+                    </button>
+                </form>
+
+                <span style="font-size: 0.82rem; color: var(--bleu-clair); cursor: pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                    Répondre
+                </span>
+
+                <div style="display: none; width: 100%; margin-top: 10px;">
+                    <form method="POST" action="{% url 'unibooks:ajouter_commentaire' livre.pk %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="parent_id" value="{{ commentaire.pk }}">
+                        <div class="champ" style="margin-bottom: 8px;">
+                            <textarea name="contenu" rows="2" placeholder="Votre réponse à {{ commentaire.auteur.username }}…" style="width: 100%; padding: 8px 12px; border: 1px solid var(--gris-clair); border-radius: 6px; font-family: var(--font-principale); font-size: 0.88rem; resize: vertical;"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn--primaire btn--petit">Répondre</button>
+                    </form>
+                </div>
+
+            </div>
+
+            {% if commentaire.reponses.all %}
+            <div class="reponses-liste">
+                {% for reponse in commentaire.reponses.all %}
+                <div class="reponse">
+                    <div class="commentaire__auteur">
+                        ↳ {{ reponse.auteur.get_full_name|default:reponse.auteur.username }}
+                    </div>
+                    <div class="commentaire__date">
+                        {{ reponse.date_creation|date:"d/m/Y à H:i" }}
+                    </div>
+                    <div class="commentaire__contenu">{{ reponse.contenu }}</div>
+
+                    <div class="commentaire__actions" style="margin-top: 8px;">
+                        <form method="POST" action="{% url 'unibooks:toggler_like' reponse.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-like {% if reponse.pk in likes_utilisateur %}btn-like--active{% endif %}">
+                                ♥ {{ reponse.likes.count }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+    <p class="texte-gris" style="margin-top: 16px;">
+        Aucun commentaire pour ce livre. Soyez le premier à en laisser un !
+    </p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

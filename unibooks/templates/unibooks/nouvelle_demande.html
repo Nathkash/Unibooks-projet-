@@ -1,0 +1,58 @@
+{% extends 'unibooks/base.html' %}
+
+{% block titre %}Nouvelle Demande{% endblock %}
+
+{% block contenu %}
+
+<div style="margin-bottom: 24px;">
+    <a href="{% url 'unibooks:mes_demandes' %}" class="btn btn--secondaire btn--petit">
+        ← Mes demandes
+    </a>
+</div>
+
+<h1 class="page-titre">Demander un livre</h1>
+
+<div class="bloc" style="max-width: 560px;">
+    <p style="font-size: 0.9rem; color: var(--gris-moyen); margin-bottom: 24px;">
+        Ce livre n'est pas dans notre catalogue ? Signalez-le au bibliothécaire.
+        Votre demande sera examinée dans les meilleurs délais.
+    </p>
+
+    <form method="POST" action="{% url 'unibooks:nouvelle_demande' %}">
+        {% csrf_token %}
+        <div class="formulaire" style="max-width: 100%;">
+
+            <div class="champ {% if form.titre.errors %}champ--erreur{% endif %}">
+                <label for="{{ form.titre.id_for_label }}">Titre du livre *</label>
+                {{ form.titre }}
+                {% for erreur in form.titre.errors %}
+                <span class="champ__erreur-message">{{ erreur }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="champ {% if form.auteur.errors %}champ--erreur{% endif %}">
+                <label for="{{ form.auteur.id_for_label }}">Auteur</label>
+                {{ form.auteur }}
+                {% for erreur in form.auteur.errors %}
+                <span class="champ__erreur-message">{{ erreur }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="champ {% if form.message.errors %}champ--erreur{% endif %}">
+                <label for="{{ form.message.id_for_label }}">Message (facultatif)</label>
+                {{ form.message }}
+                {% for erreur in form.message.errors %}
+                <span class="champ__erreur-message">{{ erreur }}</span>
+                {% endfor %}
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 8px;">
+                <button type="submit" class="btn btn--primaire">Envoyer la demande</button>
+                <a href="{% url 'unibooks:mes_demandes' %}" class="btn btn--secondaire">Annuler</a>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+{% endblock %}

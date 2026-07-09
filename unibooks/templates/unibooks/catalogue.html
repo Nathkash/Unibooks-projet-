@@ -1,0 +1,74 @@
+{% extends 'unibooks/base.html' %}
+
+{% block titre %}Catalogue{% endblock %}
+
+{% block contenu %}
+
+<h1 class="page-titre">Catalogue</h1>
+
+<div class="bloc" style="padding: 16px 24px;">
+    <form method="GET" action="{% url 'unibooks:catalogue' %}">
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <input type="text" name="q" value="{{ recherche }}" placeholder="Rechercher par titre ou auteur…"
+                style="flex: 1; padding: 10px 14px; border: 1px solid var(--gris-clair); border-radius: 6px; font-size: 0.95rem; outline: none; font-family: var(--font-principale);">
+            <button type="submit" class="btn btn--primaire">Rechercher</button>
+            {% if recherche %}
+            <a href="{% url 'unibooks:catalogue' %}" class="btn btn--secondaire">Effacer</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+{% if recherche %}
+<p style="margin-bottom: 16px; color: var(--gris-moyen); font-size: 0.9rem;">
+    Résultats pour « <strong>{{ recherche }}</strong> » — {{ livres|length }} livre(s) trouvé(s)
+</p>
+{% endif %}
+
+{% if livres %}
+<div class="livres-grille">
+    {% for livre in livres %}
+    <div class="livre-carte">
+        <div class="livre-carte__couverture"
+             style="display:flex; align-items:center; justify-content:center; background: var(--bleu-tres-clair);">
+            <span style="font-size: 2.5rem;">No image</span>
+        </div>
+        <div>
+            <div class="livre-carte__titre">{{ livre.titre }}</div>
+            <div class="livre-carte__auteur">{{ livre.auteur }}</div>
+            {% if livre.categorie %}
+            <div style="font-size: 0.78rem; color: var(--gris-moyen); margin-top: 4px;">
+                {{ livre.categorie }}
+            </div>
+            {% endif %}
+        </div>
+        <div class="{% if livre.est_disponible %}livre-carte__dispo{% else %}livre-carte__dispo livre-carte__dispo--indispo{% endif %}">
+            {% if livre.est_disponible %}
+                {{ livre.quantite_disponible }} / {{ livre.quantite_totale }} disponible(s)
+            {% else %}
+                Tous les exemplaires sont empruntés
+            {% endif %}
+        </div>
+        <a href="{% url 'unibooks:detail_livre' livre.pk %}" class="btn btn--secondaire btn--petit">Voir le détail</a>
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+<div class="bloc" style="text-align: center; padding: 48px;">
+    <p class="texte-gris">
+        {% if recherche %}
+            Aucun livre ne correspond à votre recherche.
+        {% else %}
+            Le catalogue est vide pour le moment.
+        {% endif %}
+    </p>
+    {% if recherche %}
+    <a href="{% url 'unibooks:catalogue' %}" class="btn btn--secondaire" style="margin-top: 16px;">
+        Voir tous les livres
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'unibooks/base.html' %}
+
+{% block titre %}Mes Demandes{% endblock %}
+
+{% block contenu %}
+
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+    <h1 class="page-titre" style="margin-bottom: 0;">Mes Demandes</h1>
+    <a href="{% url 'unibooks:nouvelle_demande' %}" class="btn btn--primaire">
+        + Nouvelle demande
+    </a>
+</div>
+
+{% if demandes %}
+<div class="bloc">
+    <div class="tableau-wrapper">
+        <table class="tableau">
+            <thead>
+                <tr>
+                    <th>Titre demandé</th>
+                    <th>Auteur</th>
+                    <th>Message</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for demande in demandes %}
+                <tr>
+                    <td class="gras">{{ demande.titre }}</td>
+                    <td>{{ demande.auteur|default:"—" }}</td>
+                    <td style="max-width: 220px; font-size: 0.85rem; color: var(--gris-moyen);">
+                        {{ demande.message|default:"—"|truncatechars:60 }}
+                    </td>
+                    <td>{{ demande.date_demande|date:"d/m/Y" }}</td>
+                    <td>
+                        <span class="badge
+                            {% if demande.statut == 'EN_ATTENTE' %}badge--en-attente
+                            {% elif demande.statut == 'APPROUVEE' %}badge--rendu
+                            {% else %}badge--en-retard{% endif %}">
+                            {{ demande.get_statut_display }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% else %}
+<div class="bloc" style="text-align: center; padding: 48px;">
+    <p class="texte-gris">Vous n'avez encore fait aucune demande de livre.</p>
+    <a href="{% url 'unibooks:nouvelle_demande' %}" class="btn btn--primaire" style="margin-top: 16px;">
+        Faire une demande
+    </a>
+</div>
+{% endif %}
+
+{% endblock %}

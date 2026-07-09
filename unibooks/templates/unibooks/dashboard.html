@@ -1,0 +1,122 @@
+{% extends 'unibooks/base.html' %}
+
+{% block titre %}Dashboard{% endblock %}
+
+{% block contenu %}
+
+<h1 class="page-titre">Tableau de Bord — Étudiant</h1>
+
+
+<div class="stats-grille">
+
+    <div class="stat-carte">
+        <div>
+            <div class="stat-carte__label">Livres Empruntés</div>
+            <div class="stat-carte__valeur">{{ nb_emprunts }}</div>
+        </div>
+    </div>
+
+    <div class="stat-carte {% if nb_retards > 0 %}stat-carte--alerte{% endif %}">
+        <div>
+            <div class="stat-carte__label">En Retard</div>
+            <div class="stat-carte__valeur">{{ nb_retards }}</div>
+        </div>
+        <div class="stat-carte__icone">{% if nb_retards > 0 %}⚠️{% else %}{% endif %}</div>
+    </div>
+
+    <div class="stat-carte">
+        <div>
+            <div class="stat-carte__label">Dernière Demande</div>
+            <div class="stat-carte__valeur" style="font-size: 1rem; font-weight: 600;">
+                {% if derniere_demande %}
+                    <span class="badge
+                        {% if derniere_demande.statut == 'EN_ATTENTE' %}badge--en-attente
+                        {% elif derniere_demande.statut == 'APPROUVEE' %}badge--rendu
+                        {% else %}badge--en-retard{% endif %}">
+                        {{ derniere_demande.get_statut_display }}
+                    </span>
+                {% else %}
+                    <span class="texte-gris" style="font-size:0.9rem;">Aucune demande</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% if emprunts_en_retard %}
+<div class="bloc-alerte-retard">
+    <div class="bloc-alerte-retard__icone">⚠️</div>
+    <div class="bloc-alerte-retard__texte">
+        Vous avez <strong>{{ nb_retards }} livre(s) en retard</strong>.
+        Veuillez les retourner à la bibliothèque dès que possible.
+        <a href="{% url 'unibooks:mes_emprunts' %}" style="color: var(--rouge-vif); text-decoration: underline; margin-left: 8px;">
+            Voir mes emprunts →
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<div class="bloc">
+    <div class="bloc__titre">Derniers Livres Ajoutés</div>
+
+    {% if derniers_livres %}
+    <div class="livres-grille">
+        {% for livre in derniers_livres %}
+        <div class="livre-carte">
+            <div class="livre-carte__couverture" style="display:flex; align-items:center; justify-content:center; background: var(--bleu-tres-clair);">
+                <span style="font-size: 2.5rem;">No image</span>
+            </div>
+            <div>
+                <div class="livre-carte__titre">{{ livre.titre }}</div>
+                <div class="livre-carte__auteur">{{ livre.auteur }}</div>
+            </div>
+            <div class="{% if livre.est_disponible %}livre-carte__dispo{% else %}livre-carte__dispo livre-carte__dispo--indispo{% endif %}">
+                {% if livre.est_disponible %}
+                    {{ livre.quantite_disponible }} exemplaire(s) disponible(s)
+                {% else %}
+                    Indisponible
+                {% endif %}
+            </div>
+            <a href="{% url 'unibooks:detail_livre' livre.pk %}" class="btn btn--secondaire btn--petit">
+                Voir
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="texte-gris">Aucun livre dans le catalogue pour le moment.</p>
+    {% endif %}
+</div>
+
+<div class="bloc">
+    <div class="bloc__titre">Alertes et Retours</div>
+
+    {% if emprunts_en_retard %}
+    <div class="tableau-wrapper">
+        <table class="tableau">
+            <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th>Date de Retour</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for emprunt in emprunts_en_retard %}
+                <tr>
+                    <td>{{ emprunt.livre.titre }}</td>
+                    <td>{{ emprunt.date_retour_prevue|date:"d/m/Y" }}</td>
+                    <td><span class="badge badge--en-retard">En Retard</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="texte-gris">Aucun retard. Continuez comme ça !</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

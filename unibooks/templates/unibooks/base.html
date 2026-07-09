@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titre %}UniBooks{% endblock %} — UniBooks</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block style_extra %}{% endblock %}
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <div class="sidebar__logo"><span class="sidebar__logo-texte">UniBooks</span></div>
+
+    <nav class="sidebar__nav">
+        <ul>
+            <li>
+                <a href="{% url 'unibooks:dashboard' %}"
+                   class="{% if request.resolver_match.url_name == 'dashboard' %}actif{% endif %}">
+                    Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'unibooks:catalogue' %}"
+                   class="{% if request.resolver_match.url_name == 'catalogue' or request.resolver_match.url_name == 'detail_livre' %}actif{% endif %}">
+                    Catalogue
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'unibooks:mes_emprunts' %}"
+                   class="{% if request.resolver_match.url_name == 'mes_emprunts' %}actif{% endif %}">
+                    Mes Emprunts
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'unibooks:mes_demandes' %}"
+                   class="{% if request.resolver_match.url_name == 'mes_demandes' or request.resolver_match.url_name == 'nouvelle_demande' %}actif{% endif %}">
+                    Mes Demandes
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'unibooks:profil' %}"
+                   class="{% if request.resolver_match.url_name == 'profil' %}actif{% endif %}">
+                    Profil
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+
+    <div class="sidebar__deconnexion">
+        <a href="{% url 'unibooks:deconnexion' %}">
+            Déconnexion
+        </a>
+    </div>
+
+</aside>
+
+<div class="contenu-principal">
+
+    <header class="topbar">
+        <div class="topbar__utilisateur">
+            <div class="topbar__avatar">{{ request.user.first_name|first|upper }}</div>
+            <span>{{ request.user.get_full_name|default:request.user.username }}</span>
+        </div>
+    </header>
+
+    <main class="page-contenu">
+
+        {% if messages %}
+        <div class="messages-django">
+            {% for message in messages %}
+            <div class="alerte alerte--{% if message.tags == 'error' %}erreur{% elif message.tags == 'success' %}succes{% elif message.tags == 'warning' %}avertissement{% else %}info{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block contenu %}{% endblock %}
+
+    </main>
+</div>
+
+</body>
+</html>

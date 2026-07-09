@@ -1,0 +1,77 @@
+{% extends 'unibooks/base.html' %}
+
+{% block titre %}Mon Profil{% endblock %}
+
+{% block contenu %}
+
+<h1 class="page-titre">Mon Profil</h1>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 800px;">
+
+    <div class="bloc">
+        <div class="bloc__titre">Informations personnelles</div>
+
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+                <div style="font-size: 0.8rem; color: var(--gris-moyen); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px;">Matricule</div>
+                <div class="gras">{{ utilisateur.username }}</div>
+            </div>
+            <div>
+                <div style="font-size: 0.8rem; color: var(--gris-moyen); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px;">Nom complet</div>
+                <div>{{ utilisateur.get_full_name|default:"Non renseigné" }}</div>
+            </div>
+            <div>
+                <div style="font-size: 0.8rem; color: var(--gris-moyen); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px;">Email</div>
+                <div>{{ utilisateur.email|default:"Non renseigné" }}</div>
+            </div>
+            <div>
+                <div style="font-size: 0.8rem; color: var(--gris-moyen); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px;">Rôle</div>
+                <div>
+                    <span class="badge badge--en-cours">{{ utilisateur.get_role_display }}</span>
+                </div>
+            </div>
+            <div>
+                <div style="font-size: 0.8rem; color: var(--gris-moyen); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px;">Membre depuis</div>
+                <div>{{ utilisateur.date_joined|date:"d/m/Y" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bloc">
+        <div class="bloc__titre">Mes statistiques</div>
+
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gris-clair);">
+                <span style="font-size: 0.9rem;">Emprunts en cours</span>
+                <span class="badge badge--en-cours">
+                    {{ utilisateur.emprunts.all|length }}
+                </span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gris-clair);">
+                <span style="font-size: 0.9rem;">Demandes envoyées</span>
+                <span class="badge badge--en-attente">
+                    {{ utilisateur.demandes.count }}
+                </span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                <span style="font-size: 0.9rem;">Commentaires publiés</span>
+                <span class="badge badge--rendu">
+                    {{ utilisateur.commentaires.count }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="bloc" style="max-width: 800px; margin-top: 0;">
+    <div class="bloc__titre">Sécurité</div>
+    <p style="font-size: 0.9rem; color: var(--gris-moyen); margin-bottom: 16px;">
+        Vous pouvez changer votre mot de passe à tout moment.
+    </p>
+    <a href="{% url 'unibooks:changer_mdp' %}" class="btn btn--secondaire">
+        Changer mon mot de passe
+    </a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Changement de mot de passe — UniBooks</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+<div class="page-connexion">
+
+    <div class="connexion-panneau-gauche">
+        <div class="connexion-panneau-gauche__contenu">
+            <div class="sidebar__logo" style="padding: 0; border: none; margin-bottom: 32px;">
+                <span class="sidebar__logo-texte">UniBooks</span>
+            </div>
+            <h2 class="connexion-accroche">Sécurisez votre compte.</h2>
+            <p class="connexion-sous-accroche">
+                Choisissez un mot de passe personnel<br>pour protéger votre espace étudiant.
+            </p>
+        </div>
+    </div>
+
+    <div class="connexion-panneau-droit">
+        <div class="connexion-carte">
+
+            <h1 class="connexion-carte__titre">
+                Bienvenue, {{ request.user.first_name|default:request.user.username }} !
+            </h1>
+            <p class="connexion-carte__sous-titre">
+                Pour votre sécurité, vous devez choisir un mot de passe personnel avant d'accéder à votre espace.
+            </p>
+
+            <div class="alerte alerte--avertissement" style="margin-bottom: 20px;">
+                Ce mot de passe remplace le mot de passe provisoire qui vous a été attribué.
+            </div>
+
+            {% if messages %}
+            <div class="messages-django" style="margin-bottom: 18px;">
+                {% for message in messages %}
+                <div class="alerte alerte--{% if message.tags == 'error' %}erreur{% else %}succes{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{% url 'unibooks:changer_mdp' %}">
+                {% csrf_token %}
+                <div class="formulaire" style="max-width: 100%;">
+
+                    <div class="champ {% if form.nouveau_mot_de_passe.errors %}champ--erreur{% endif %}">
+                        <label for="{{ form.nouveau_mot_de_passe.id_for_label }}">Nouveau mot de passe</label>
+                        {{ form.nouveau_mot_de_passe }}
+                        {% for erreur in form.nouveau_mot_de_passe.errors %}
+                        <span class="champ__erreur-message">{{ erreur }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="champ {% if form.confirmation.errors %}champ--erreur{% endif %}">
+                        <label for="{{ form.confirmation.id_for_label }}">Confirmer le mot de passe</label>
+                        {{ form.confirmation }}
+                        {% for erreur in form.confirmation.errors %}
+                        <span class="champ__erreur-message">{{ erreur }}</span>
+                        {% endfor %}
+                    </div>
+
+                    {% if form.non_field_errors %}
+                    <div class="alerte alerte--erreur">
+                        {% for erreur in form.non_field_errors %}{{ erreur }}{% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn--primaire" style="width:100%; margin-top: 8px;">Valider mon nouveau mot de passe</button>
+
+                </div>
+            </form>
+
+            <hr class="separateur">
+            <a href="{% url 'unibooks:deconnexion' %}" class="texte-gris" style="font-size: 0.85rem;">← Me déconnecter</a>
+
+        </div>
+    </div>
+
+</div>
+
+<style>
+
+    body { 
+        display: block; 
+        background-color: 
+        var(--gris-fond); 
+    }
+
+    .page-connexion { 
+        display: flex; 
+        min-height: 100vh; 
+    }
+
+    .connexion-panneau-gauche {
+        width: 45%;
+        background-color: var(--bleu-profond);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 48px;
+    }
+
+    .connexion-panneau-gauche__contenu { 
+        max-width: 340px; 
+    }
+
+    .connexion-accroche {
+        font-size: 1.55rem;
+        font-weight: 700;
+        color: var(--blanc);
+        line-height: 1.35;
+        margin-bottom: 16px;
+    }
+
+    .connexion-sous-accroche {
+        font-size: 0.9rem;
+        color: rgba(255,255,255,0.65);
+        line-height: 1.6;
+    }
+
+    .connexion-panneau-droit {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+    }
+
+    .connexion-carte {
+        width: 100%;
+        max-width: 420px;
+        background-color: var(--blanc);
+        border: 1px solid var(--gris-clair);
+        border-radius: 12px;
+        padding: 40px 36px;
+    }
+
+    .connexion-carte__titre {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--noir-titre);
+        margin-bottom: 6px;
+    }
+
+    .connexion-carte__sous-titre {
+        font-size: 0.88rem;
+        color: var(--gris-moyen);
+        margin-bottom: 24px;
+    }
+
+    .formulaire { 
+        max-width: 100%; 
+    }
+
+</style>
+
+</body>
+</html>
