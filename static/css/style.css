@@ -1,23 +1,23 @@
 :root {
-    --bleu-profond:    #1A3A5C;   
-    --bleu-moyen:      #1E4D78;   
-    --bleu-clair:      #2E6DA4;   
-    --bleu-tres-clair: #EAF2FB;   
+    --bleu-profond:#1A3A5C;   
+    --bleu-moyen:#1E4D78;   
+    --bleu-clair:#2E6DA4;   
+    --bleu-tres-clair:#EAF2FB;   
 
-    --rouge-vif:       #D32F2F;
-    --rouge-fond:      #FFEBEE;
-    --rouge-bordure:   #EF9A9A;
+    --rouge-vif:#D32F2F;
+    --rouge-fond:#FFEBEE;
+    --rouge-bordure:#EF9A9A;
 
-    --blanc:           #FFFFFF;
-    --gris-fond:       #F4F6F9;   
-    --gris-clair:      #E8ECF0;   
-    --gris-moyen:      #9EAAB8;   
-    --gris-fonce:      #4A5568;   
-    --noir-titre:      #1A202C;   
+    --blanc:#FFFFFF;
+    --gris-fond:#F4F6F9;   
+    --gris-clair:#E8ECF0;   
+    --gris-moyen:#9EAAB8;   
+    --gris-fonce:#4A5568;   
+    --noir-titre:#1A202C;   
 
     --font-principale: 'Segoe UI', Arial, sans-serif;
-    --taille-base:     15px;
-    --rayon-bord:      8px;
+    --taille-base: 15px;
+    --rayon-bord: 8px;
 
     --sidebar-largeur: 240px;
 }

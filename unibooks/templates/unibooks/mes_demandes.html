@@ -34,10 +34,7 @@
                     </td>
                     <td>{{ demande.date_demande|date:"d/m/Y" }}</td>
                     <td>
-                        <span class="badge
-                            {% if demande.statut == 'EN_ATTENTE' %}badge--en-attente
-                            {% elif demande.statut == 'APPROUVEE' %}badge--rendu
-                            {% else %}badge--en-retard{% endif %}">
+                        <span class="badge {% if demande.statut == 'EN_ATTENTE' %}badge--en-attente {% elif demande.statut == 'APPROUVEE' %}badge--rendu {% else %}badge--en-retard{% endif %}">
                             {{ demande.get_statut_display }}
                         </span>
                     </td>

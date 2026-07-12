@@ -19,33 +19,38 @@
     <nav class="sidebar__nav">
         <ul>
             <li>
-                <a href="{% url 'unibooks:dashboard' %}"
-                   class="{% if request.resolver_match.url_name == 'dashboard' %}actif{% endif %}">
+                <a href="{% url 'unibooks:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}actif{% endif %}">
                     Dashboard
                 </a>
             </li>
             <li>
-                <a href="{% url 'unibooks:catalogue' %}"
-                   class="{% if request.resolver_match.url_name == 'catalogue' or request.resolver_match.url_name == 'detail_livre' %}actif{% endif %}">
+                <a href="{% url 'unibooks:catalogue' %}" class="{% if request.resolver_match.url_name == 'catalogue' or request.resolver_match.url_name == 'detail_livre' %}actif{% endif %}">
                     Catalogue
                 </a>
             </li>
             <li>
-                <a href="{% url 'unibooks:mes_emprunts' %}"
-                   class="{% if request.resolver_match.url_name == 'mes_emprunts' %}actif{% endif %}">
+                <a href="{% url 'unibooks:mes_emprunts' %}" class="{% if request.resolver_match.url_name == 'mes_emprunts' %}actif{% endif %}">
                     Mes Emprunts
                 </a>
             </li>
             <li>
-                <a href="{% url 'unibooks:mes_demandes' %}"
-                   class="{% if request.resolver_match.url_name == 'mes_demandes' or request.resolver_match.url_name == 'nouvelle_demande' %}actif{% endif %}">
+                <a href="{% url 'unibooks:mes_demandes' %}" class="{% if request.resolver_match.url_name == 'mes_demandes' or request.resolver_match.url_name == 'nouvelle_demande' %}actif{% endif %}">
                     Mes Demandes
                 </a>
             </li>
             <li>
-                <a href="{% url 'unibooks:profil' %}"
-                   class="{% if request.resolver_match.url_name == 'profil' %}actif{% endif %}">
+                <a href="{% url 'unibooks:profil' %}" class="{% if request.resolver_match.url_name == 'profil' %}actif{% endif %}">
                     Profil
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'unibooks:notifications' %}" class="{% if request.resolver_match.url_name == 'notifications' %}actif{% endif %}">
+                    Notifications
+                    {% if nb_notifs_non_lues > 0 %}
+                    <span style="background-color: var(--rouge-vif); color: white; border-radius: 50%; font-size: 0.7rem; font-weight: 700; padding: 2px 7px; margin-left: auto; min-width: 20px; text-align: center;">
+                        {{ nb_notifs_non_lues }}
+                    </span>
+                    {% endif %}
                 </a>
             </li>
         </ul>

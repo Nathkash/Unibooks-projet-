@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db import IntegrityError
 
-from .models import Utilisateur, Livre, Emprunt, DemandeLivre, Commentaire, Like
+from .models import Utilisateur, Livre, Emprunt, DemandeLivre, Commentaire, Like, LivreLike, Notification
 from .forms  import ConnexionForm, ChangerMotDePasseForm, DemandeForm, CommentaireForm
 
 
@@ -154,6 +154,33 @@ def mes_emprunts(request):
     return render(request, 'unibooks/mes_emprunts.html', {'emprunts': emprunts})
 
 
+# DEMANDES EMPRUNTS
+
+@login_required(login_url='unibooks:connexion')
+def demander_emprunt(request, livre_pk):
+    livre = get_object_or_404(Livre, pk=livre_pk)
+
+    if request.method == 'POST':
+        existe = DemandeLivre.objects.filter(
+            etudiant=request.user,
+            titre=livre.titre,
+            statut=DemandeLivre.Statut.EN_ATTENTE
+        ).exists()
+
+        if existe:
+            messages.warning(request, "Vous avez déjà une demande en attente pour ce livre.")
+        else:
+            DemandeLivre.objects.create(
+                etudiant=request.user,
+                titre=livre.titre,
+                auteur=livre.auteur,
+                message=f"Demande d'emprunt pour le livre : {livre.titre}"
+            )
+            messages.success(request, f"Votre demande d'emprunt pour « {livre.titre} » a été envoyée au bibliothécaire.")
+
+    return redirect('unibooks:detail_livre', pk=livre_pk)
+
+
 # DEMANDES
 
 @login_required(login_url='unibooks:connexion')
@@ -221,6 +248,39 @@ def toggler_like(request, commentaire_pk):
             utilisateur=request.user
         ).delete()
     return redirect('unibooks:detail_livre', pk=commentaire.livre_id)
+
+
+@login_required(login_url='unibooks:connexion')
+def toggler_like_livre(request, livre_pk):
+    if request.method != 'POST':
+        return redirect('unibooks:catalogue')
+    livre = get_object_or_404(Livre, pk=livre_pk)
+    try:
+        LivreLike.objects.create(livre=livre, utilisateur=request.user)
+    except IntegrityError:
+        LivreLike.objects.filter(livre=livre, utilisateur=request.user).delete()
+    return redirect('unibooks:detail_livre', pk=livre_pk)
+
+
+# NOTIFICATIONS
+
+@login_required(login_url='unibooks:connexion')
+def notifications(request):
+    Notification.objects.filter(
+        destinataire=request.user, lue=False
+    ).update(lue=True)
+
+    notifs = Notification.objects.filter(destinataire=request.user)
+    return render(request, 'unibooks/notifications.html', {'notifs': notifs})
+
+
+@login_required(login_url='unibooks:connexion')
+def marquer_lue(request, pk):
+    if request.method == 'POST':
+        Notification.objects.filter(
+            pk=pk, destinataire=request.user
+        ).update(lue=True)
+    return redirect('unibooks:notifications')
 
 
 # PROFIL

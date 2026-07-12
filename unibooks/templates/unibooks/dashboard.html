@@ -29,10 +29,7 @@
             <div class="stat-carte__label">Dernière Demande</div>
             <div class="stat-carte__valeur" style="font-size: 1rem; font-weight: 600;">
                 {% if derniere_demande %}
-                    <span class="badge
-                        {% if derniere_demande.statut == 'EN_ATTENTE' %}badge--en-attente
-                        {% elif derniere_demande.statut == 'APPROUVEE' %}badge--rendu
-                        {% else %}badge--en-retard{% endif %}">
+                    <span class="badge {% if derniere_demande.statut == 'EN_ATTENTE' %}badge--en-attente {% elif derniere_demande.statut == 'APPROUVEE' %}badge--rendu {% else %}badge--en-retard{% endif %}">
                         {{ derniere_demande.get_statut_display }}
                     </span>
                 {% else %}
@@ -64,9 +61,13 @@
     <div class="livres-grille">
         {% for livre in derniers_livres %}
         <div class="livre-carte">
-            <div class="livre-carte__couverture" style="display:flex; align-items:center; justify-content:center; background: var(--bleu-tres-clair);">
-                <span style="font-size: 2.5rem;">No image</span>
-            </div>
+             {% if livre.photo %}
+                <img src="{{ livre.photo }}" alt="{{ livre.titre }}" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">
+            {% else %}
+                <div style="width:100%; height:130px; background:var(--bleu-tres-clair); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:2.5rem;">
+                    No image
+                </div>
+            {% endif %}
             <div>
                 <div class="livre-carte__titre">{{ livre.titre }}</div>
                 <div class="livre-carte__auteur">{{ livre.auteur }}</div>

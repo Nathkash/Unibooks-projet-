@@ -9,11 +9,12 @@
 <div class="bloc" style="padding: 16px 24px;">
     <form method="GET" action="{% url 'unibooks:catalogue' %}">
         <div style="display: flex; gap: 12px; align-items: center;">
-            <input type="text" name="q" value="{{ recherche }}" placeholder="Rechercher par titre ou auteur…"
-                style="flex: 1; padding: 10px 14px; border: 1px solid var(--gris-clair); border-radius: 6px; font-size: 0.95rem; outline: none; font-family: var(--font-principale);">
+            <input type="text" name="q" value="{{ recherche }}" placeholder="Rechercher par titre ou auteur…" style="flex: 1; padding: 10px 14px; border: 1px solid var(--gris-clair); border-radius: 6px; font-size: 0.95rem; outline: none; font-family: var(--font-principale);">
             <button type="submit" class="btn btn--primaire">Rechercher</button>
             {% if recherche %}
-            <a href="{% url 'unibooks:catalogue' %}" class="btn btn--secondaire">Effacer</a>
+            <a href="{% url 'unibooks:catalogue' %}" class="btn btn--secondaire">
+                Effacer
+            </a>
             {% endif %}
         </div>
     </form>
@@ -29,10 +30,13 @@
 <div class="livres-grille">
     {% for livre in livres %}
     <div class="livre-carte">
-        <div class="livre-carte__couverture"
-             style="display:flex; align-items:center; justify-content:center; background: var(--bleu-tres-clair);">
-            <span style="font-size: 2.5rem;">No image</span>
-        </div>
+        {% if livre.photo %}
+            <img src="{{ livre.photo }}" alt="{{ livre.titre }}" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">
+        {% else %}
+            <div style="width:100%; height:130px; background:var(--bleu-tres-clair); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:2.5rem;">
+                No image
+            </div>
+        {% endif %}
         <div>
             <div class="livre-carte__titre">{{ livre.titre }}</div>
             <div class="livre-carte__auteur">{{ livre.auteur }}</div>
@@ -42,6 +46,7 @@
             </div>
             {% endif %}
         </div>
+        <div style="font-size:0.82rem; color:var(--gris-moyen); margin-top:4px;">♥ {{ livre.likes.count }} Likes</div>
         <div class="{% if livre.est_disponible %}livre-carte__dispo{% else %}livre-carte__dispo livre-carte__dispo--indispo{% endif %}">
             {% if livre.est_disponible %}
                 {{ livre.quantite_disponible }} / {{ livre.quantite_totale }} disponible(s)
@@ -49,7 +54,9 @@
                 Tous les exemplaires sont empruntés
             {% endif %}
         </div>
-        <a href="{% url 'unibooks:detail_livre' livre.pk %}" class="btn btn--secondaire btn--petit">Voir le détail</a>
+        <a href="{% url 'unibooks:detail_livre' livre.pk %}" class="btn btn--secondaire btn--petit">
+            Voir le détail
+        </a>
     </div>
     {% endfor %}
 </div>

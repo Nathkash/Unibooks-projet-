@@ -43,10 +43,7 @@
                         {% endif %}
                     </td>
                     <td>
-                        <span class="badge
-                            {% if emprunt.statut == 'EN_COURS' %}badge--en-cours
-                            {% elif emprunt.statut == 'RENDU' %}badge--rendu
-                            {% else %}badge--en-retard{% endif %}">
+                        <span class="badge {% if emprunt.statut == 'EN_COURS' %}badge--en-cours {% elif emprunt.statut == 'RENDU' %}badge--rendu {% else %}badge--en-retard{% endif %}">
                             {{ emprunt.get_statut_display }}
                         </span>
                     </td>

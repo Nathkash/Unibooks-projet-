@@ -13,25 +13,35 @@
 
         <div style="display: flex; flex-direction: column; gap: 14px;">
             <div>
-                <div style="font-size: 0.8rem; color: var(--gris-moyen); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px;">Matricule</div>
+                <div style="font-size: 0.8rem; color: var(--gris-moyen); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px;">
+                    Matricule
+                </div>
                 <div class="gras">{{ utilisateur.username }}</div>
             </div>
             <div>
-                <div style="font-size: 0.8rem; color: var(--gris-moyen); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px;">Nom complet</div>
+                <div style="font-size: 0.8rem; color: var(--gris-moyen); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px;">
+                    Nom complet
+                </div>
                 <div>{{ utilisateur.get_full_name|default:"Non renseigné" }}</div>
             </div>
             <div>
-                <div style="font-size: 0.8rem; color: var(--gris-moyen); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px;">Email</div>
+                <div style="font-size: 0.8rem; color: var(--gris-moyen); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px;">
+                    Email
+                </div>
                 <div>{{ utilisateur.email|default:"Non renseigné" }}</div>
             </div>
             <div>
-                <div style="font-size: 0.8rem; color: var(--gris-moyen); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px;">Rôle</div>
+                <div style="font-size: 0.8rem; color: var(--gris-moyen); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px;">
+                    Rôle
+                </div>
                 <div>
                     <span class="badge badge--en-cours">{{ utilisateur.get_role_display }}</span>
                 </div>
             </div>
             <div>
-                <div style="font-size: 0.8rem; color: var(--gris-moyen); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px;">Membre depuis</div>
+                <div style="font-size: 0.8rem; color: var(--gris-moyen); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px;">
+                    Membre depuis
+                </div>
                 <div>{{ utilisateur.date_joined|date:"d/m/Y" }}</div>
             </div>
         </div>

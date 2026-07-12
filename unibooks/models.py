@@ -276,7 +276,22 @@ class Commentaire(models.Model):
         return f"{self.auteur} sur '{self.livre.titre}"
     
 
-# LIKE
+# LIKE LIVRE
+
+class LivreLike(models.Model):
+    livre       = models.ForeignKey(Livre, on_delete=models.CASCADE, related_name='likes', verbose_name="Livre")
+    utilisateur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name='livre_likes', verbose_name="Utilisateur")
+    date_like   = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name    = "J'aime (Livre)"
+        unique_together = ('livre', 'utilisateur')
+
+    def __str__(self):
+        return f"{self.utilisateur} ♥ {self.livre.titre}"
+    
+
+# LIKE COMMENTAIRE
 
 class Like(models.Model):
     commentaire = models.ForeignKey(
@@ -300,6 +315,43 @@ class Like(models.Model):
 
     def __str__(self):
         return f"{self.utilisateur} ❤︎ commentaire #{self.commentaire_id}"
+
+
+# NOTIFICATION
+
+class Notification(models.Model):
+    destinataire = models.ForeignKey(
+        Utilisateur,
+        on_delete=models.CASCADE,
+        related_name='notifications',
+        verbose_name="Destinataire",
+        null=True, 
+        blank=True
+    )
+    titre = models.CharField(
+        max_length=255,
+        verbose_name="Titre"
+    )
+    message = models.TextField(
+        verbose_name="Message"
+    )
+    lue = models.BooleanField(
+        default=False,
+        verbose_name="Lue"
+    )
+    date_envoi = models.DateTimeField(
+        auto_now_add=True, 
+        verbose_name="Date d'envoi"
+    )
+
+    class Meta:
+        verbose_name = "Notification"
+        verbose_name_plural = "Notifications"
+        ordering = ['-date_envoi']
+
+    def __str__(self):
+        dest = self.destinataire.matricule if self.destinataire else "Tous les étudiants"
+        return f"→ {dest} : {self.titre}"
     
 
 class EtudiantProxy(Utilisateur):

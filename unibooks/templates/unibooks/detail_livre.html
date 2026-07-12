@@ -9,8 +9,16 @@
 </div>
 
 <div class="bloc" style="display: flex; gap: 28px; align-items: flex-start;">
-    <div style="width: 90px; height: 120px; background: var(--bleu-tres-clair); border-radius: 6px; display: flex; align-items: center;justify-content: center; flex-shrink: 0; font-size: 3rem;">
-        No image
+
+    <div style="width: 180px; flex-shrink: 0;">
+        {% if livre.photo %}
+            <img src="{{ livre.photo }}" alt="{{ livre.titre }}"
+                 style="width: 180px; height: 240px; object-fit: cover; border-radius: 8px; display: block;">
+        {% else %}
+            <div style="width: 180px; height: 240px; background: var(--bleu-tres-clair); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+                No image
+            </div>
+        {% endif %}
     </div>
 
     <div style="flex: 1;">
@@ -29,7 +37,7 @@
         </p>
         {% endif %}
 
-        <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
             {% if livre.est_disponible %}
             <span class="badge badge--rendu">Disponible</span>
             <span style="font-size: 0.85rem; color: var(--gris-moyen);">
@@ -37,17 +45,38 @@
             </span>
             {% else %}
             <span class="badge badge--en-retard">Indisponible</span>
-            <span style="font-size: 0.85rem; color: var(--gris-moyen);">
-                0 exemplaire disponible
-            </span>
             {% endif %}
         </div>
+
+        {% if livre.est_disponible %}
+        <div class="alerte alerte--info" style="margin-top: 16px;">
+            Pour emprunter ce livre, rendez-vous <strong>en personne à la bibliothèque</strong> 
+            avec votre matricule. Le bibliothécaire enregistrera l'emprunt et vous pourrez 
+            suivre sa durée dans <a href="{% url 'unibooks:mes_emprunts' %}" 
+            style="color: var(--bleu-clair); text-decoration: underline;">Mes Emprunts</a>.
+        </div>
+        {% else %}
+        <div class="alerte alerte--erreur" style="margin-top: 16px;">
+            Ce livre est actuellement <strong>indisponible</strong>. 
+            Tous les exemplaires sont empruntés. Revenez plus tard.
+        </div>
+        {% endif %}
+
+        <div style="margin-top: 12px;">
+            <form method="POST" action="{% url 'unibooks:liker_livre' livre.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-like {% if utilisateur_a_like %}btn-like--active{% endif %}" style="font-size:0.95rem; padding: 6px 18px;">
+                    {% if utilisateur_a_like %}♥{% else %}♡{% endif %}
+                    Likes · {{ livre.likes.count }}
+                </button>
+            </form>
+        </div>
+
     </div>
 </div>
 
-
 <div class="bloc">
-    <div class="bloc__titre">Commentaires ({{ livre.commentaires.count }})</div>
+    <div class="bloc__titre">Commentaires</div>
 
     <form method="POST" action="{% url 'unibooks:ajouter_commentaire' livre.pk %}">
         {% csrf_token %}

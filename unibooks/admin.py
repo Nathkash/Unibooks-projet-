@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Utilisateur, Livre, Emprunt, DemandeLivre, Commentaire, Like, EtudiantProxy, AdminProxy
+from .models import Utilisateur, Livre, Emprunt, DemandeLivre, Commentaire, Like, Notification, EtudiantProxy, AdminProxy
 from django import forms
 from django.contrib.auth.hashers import make_password
 import uuid
@@ -8,8 +8,8 @@ from django.contrib.auth.admin import UserAdmin
 
 # CONFIGIRATION
 
-admin.site.site_header = "BiblioTECH - Administration"
-admin.site.site_title = "BiblioTECH Admin"
+admin.site.site_header = "UniBooks - Administration"
+admin.site.site_title = "UniBooks Admin"
 admin.site.index_title = "Panneau de gestion"
 
 
@@ -33,8 +33,46 @@ class FormulaireEtudiant(forms.ModelForm):
         if Utilisateur.objects.filter(matricule=matricule).exists():
             raise forms.ValidationError("Ce matricule existe déjà.")
         return matricule
-    
 
+
+# FORMULAIRE NOTIFICATION
+
+from django import forms
+from .models import Notification
+
+class FormulaireEnvoiNotification(forms.ModelForm):
+    envoyer_a_tous = forms.BooleanField(
+        required=False,
+        label="Envoyer à TOUS les étudiants",
+        help_text="Si coché, le champ destinataire est ignoré."
+    )
+
+    class Meta:
+        model  = Notification
+        fields = ['destinataire', 'titre', 'message', 'envoyer_a_tous']
+        labels = {
+            'destinataire': 'Étudiant destinataire',
+            'titre': 'Titre de la notification',
+            'message': 'Message',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['destinataire'].required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+        envoyer_a_tous = cleaned_data.get('envoyer_a_tous')
+        destinataire = cleaned_data.get('destinataire')
+
+        if not envoyer_a_tous and not destinataire:
+            raise forms.ValidationError(
+                "Erreur : Vous devez soit sélectionner un étudiant, soit cocher 'Envoyer à TOUS les étudiants'."
+            )
+
+        return cleaned_data
+
+    
 # ADMIN ETUDIANT
 
 @admin.register(EtudiantProxy)
@@ -193,5 +231,50 @@ class CommentaireAdmin(admin.ModelAdmin):
 @admin.register(Like)
 class LikeAdmin(admin.ModelAdmin):
     list_display = ('utilisateur', 'commentaire', 'date_like') 
+
+
+# NOTIFICATION
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    add_form  = FormulaireEnvoiNotification
+    form      = FormulaireEnvoiNotification
+
+    list_display  = ('titre', 'destinataire', 'lue', 'date_envoi')
+    list_filter   = ('lue',)
+    search_fields = ('titre', 'destinataire__matricule', 'destinataire__first_name')
+    ordering      = ('-date_envoi',)
+    readonly_fields = ('date_envoi',)
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            envoyer_a_tous = form.cleaned_data.get('envoyer_a_tous', False)
+            
+            if envoyer_a_tous:
+                etudiants = Utilisateur.objects.filter(
+                    role=Utilisateur.Role.ETUDIANT, is_active=True
+                )
+                
+                notifications = [
+                    Notification(destinataire=etudiant, titre=obj.titre, message=obj.message)
+                    for etudiant in etudiants
+                ]
+                Notification.objects.bulk_create(notifications)
+                
+                self.message_user(
+                    request,
+                    f"Notification envoyée avec succès à {len(notifications)} étudiant(s)."
+                )
+                
+                obj.destinataire = None
+                
+            else:
+                self.message_user(
+                    request,
+                    f"Notification envoyée à l'étudiant : {obj.destinataire.matricule}."
+                )
+        
+        super().save_model(request, obj, form, change)
 
 
