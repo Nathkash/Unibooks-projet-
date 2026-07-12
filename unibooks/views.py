@@ -4,9 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from django.db import IntegrityError
-
 from .models import Utilisateur, Livre, Emprunt, DemandeLivre, Commentaire, Like, LivreLike, Notification
 from .forms  import ConnexionForm, ChangerMotDePasseForm, DemandeForm, CommentaireForm
+import os
+from django.http import FileResponse, Http404
 
 
 # AUTHENTIFICATION
@@ -260,6 +261,27 @@ def toggler_like_livre(request, livre_pk):
     except IntegrityError:
         LivreLike.objects.filter(livre=livre, utilisateur=request.user).delete()
     return redirect('unibooks:detail_livre', pk=livre_pk)
+
+
+# TELECHARCHEMENT
+
+@login_required(login_url='unibooks:connexion')
+def telecharger_livre(request, pk):
+    livre = get_object_or_404(Livre, pk=pk)
+
+    if not livre.est_telechargeable:
+        messages.error(request, "Ce livre n'est pas disponible au téléchargement.")
+        return redirect('unibooks:detail_livre', pk=pk)
+
+    try:
+        response = FileResponse(
+            livre.fichier.open('rb'),
+            as_attachment=True,
+            filename=f"{livre.titre}.{livre.fichier.name.split('.')[-1]}"
+        )
+        return response
+    except Exception:
+        raise Http404("Fichier introuvable.")
 
 
 # NOTIFICATIONS

@@ -48,6 +48,7 @@
             {% endif %}
         </div>
 
+        {% if not livre.est_telechargeable %}
         {% if livre.est_disponible %}
         <div class="alerte alerte--info" style="margin-top: 16px;">
             Pour emprunter ce livre, rendez-vous <strong>en personne à la bibliothèque</strong> 
@@ -59,6 +60,18 @@
         <div class="alerte alerte--erreur" style="margin-top: 16px;">
             Ce livre est actuellement <strong>indisponible</strong>. 
             Tous les exemplaires sont empruntés. Revenez plus tard.
+        </div>
+        {% endif %}
+        {% endif %}
+
+        {% if livre.est_telechargeable %}
+        <div style="margin-top: 14px;">
+            <a href="{% url 'unibooks:telecharger_livre' livre.pk %}" class="btn btn--primaire" style="display: inline-flex; align-items: center; gap: 8px;">
+                Télécharger ce livre
+            </a>
+            <p style="font-size: 0.8rem; color: var(--gris-moyen); margin-top: 6px;">
+                Version numérique disponible gratuitement.
+            </p>
         </div>
         {% endif %}
 

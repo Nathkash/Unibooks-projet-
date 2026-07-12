@@ -11,6 +11,7 @@ urlpatterns = [
     path('catalogue/', views.catalogue, name='catalogue'),
     path('livre/<int:pk>/', views.detail_livre, name='detail_livre'),
     path('livre/<int:livre_pk>/liker/', views.toggler_like_livre, name='liker_livre'),
+    path('livre/<int:pk>/telecharger/', views.telecharger_livre, name='telecharger_livre'),
     path('livre/<int:livre_pk>/commenter/', views.ajouter_commentaire, name='ajouter_commentaire'),
     path('commentaire/<int:commentaire_pk>/liker/', views.toggler_like, name='toggler_like'),
     path('mes-emprunts/', views.mes_emprunts, name='mes_emprunts'),

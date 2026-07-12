@@ -46,13 +46,27 @@
             </div>
             {% endif %}
         </div>
-        <div style="font-size:0.82rem; color:var(--gris-moyen); margin-top:4px;">♥ {{ livre.likes.count }} Likes</div>
+        <!-- Zone badge téléchargeable — hauteur fixe pour toutes les cartes -->
+        <div style="min-height: 28px; margin-top: 4px;">
+            {% if livre.est_telechargeable %}
+            <span class="badge badge--rendu" style="font-size: 0.72rem;">
+                ⬇ Téléchargeable
+            </span>
+            {% endif %}
+        </div>
+
+        <!-- Disponibilité -->
         <div class="{% if livre.est_disponible %}livre-carte__dispo{% else %}livre-carte__dispo livre-carte__dispo--indispo{% endif %}">
             {% if livre.est_disponible %}
                 {{ livre.quantite_disponible }} / {{ livre.quantite_totale }} disponible(s)
             {% else %}
                 Tous les exemplaires sont empruntés
             {% endif %}
+        </div>
+
+        <!-- Likes -->
+        <div style="font-size:0.82rem; color:var(--gris-moyen); margin-top:4px;">
+            ♥ {{ livre.likes.count }} Likes
         </div>
         <a href="{% url 'unibooks:detail_livre' livre.pk %}" class="btn btn--secondaire btn--petit">
             Voir le détail

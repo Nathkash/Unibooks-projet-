@@ -154,7 +154,7 @@ class AdministrateurAdmin(UserAdmin):
 
 @admin.register(Livre)
 class LivreAdmin(admin.ModelAdmin):
-    list_display = ('titre', 'auteur', 'categorie', 'quantite_totale', 'quantite_disponible', 'date_ajout')
+    list_display = ('titre', 'auteur', 'categorie', 'quantite_totale', 'quantite_disponible', 'est_telechargeable', 'date_ajout')
     list_filter = ('categorie',)
     search_fields = ('titre', 'auteur', 'isbn')
     ordering = ('-date_ajout',)

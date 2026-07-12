@@ -100,6 +100,13 @@ class Livre(models.Model):
         blank=True, null=True,
         verbose_name="URL de couverture"
     )
+    fichier = models.FileField(
+    upload_to='livres/fichiers/',
+    blank=True,
+    null=True,
+    verbose_name="Fichier téléchargeable",
+    help_text="PDF ou autre format. Laissez vide si le livre n'est pas téléchargeable."
+    )
 
     class Meta:
         verbose_name = "Livre"
@@ -127,6 +134,10 @@ class Livre(models.Model):
         if self.image_url:
             return self.image_url
         return None
+
+    @property
+    def est_telechargeable(self):
+        return bool(self.fichier)
     
 
 # EMPRUNT
